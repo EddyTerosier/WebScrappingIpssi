@@ -134,18 +134,3 @@ Les articles sont stockés dans MongoDB avec la structure suivante :
   "author": "Nom de l'auteur",
   "thumbnail": "URL de l'image miniature"
 }
-```
-
-## Contribution
-
-Pour contribuer au projet :
-
-1. Fork le repository
-2. Créer une branche pour votre fonctionnalité
-3. Commiter vos changements
-4. Pousser vers la branche
-5. Créer une Pull Request
-
-## Licence
-
-Ce projet est sous licence MIT.
