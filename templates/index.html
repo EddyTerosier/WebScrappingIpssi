@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog du Modérateur - Recherche d'articles</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <style>
+      :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #34495e;
+        --accent-color: #3498db;
+      }
+
+      body {
+        background-color: #f8f9fa;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .navbar {
+        background-color: var(--primary-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        color: white !important;
+        font-weight: bold;
+      }
+
+      .search-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .article-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .article-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px 10px 0 0;
+      }
+
+      .article-content {
+        padding: 1.5rem;
+      }
+
+      .article-title {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .article-meta {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .article-meta i {
+        margin-right: 0.5rem;
+      }
+
+      .btn-primary {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+      }
+
+      .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+      }
+
+      .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+      }
+
+      .results-header {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="/"> <i class="bi bi-newspaper"></i> Blog du Modérateur </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Formulaire de recherche -->
+      <div class="search-container">
+        <h2 class="mb-4">Recherche d'articles</h2>
+        <form method="POST">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="start_date" class="form-label"> <i class="bi bi-calendar3"></i> Date de début </label>
+              <input type="date" class="form-control" id="start_date" name="start_date" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="end_date" class="form-label"> <i class="bi bi-calendar3"></i> Date de fin </label>
+              <input type="date" class="form-control" id="end_date" name="end_date" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="author" class="form-label"> <i class="bi bi-person"></i> Auteur </label>
+              <select class="form-select" id="author" name="author">
+                <option value="">Tous les auteurs</option>
+                {% for author in authors %}
+                <option value="{{ author }}">{{ author }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="category" class="form-label"> <i class="bi bi-tag"></i> Catégorie </label>
+              <select class="form-select" id="category" name="category">
+                <option value="">Toutes les catégories</option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="subcategory" class="form-label"> <i class="bi bi-tags"></i> Sous-catégorie </label>
+              <select class="form-select" id="subcategory" name="subcategory">
+                <option value="">Toutes les sous-catégories</option>
+                {% for subcategory in subcategories %}
+                <option value="{{ subcategory }}">{{ subcategory }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="title_search" class="form-label"> <i class="bi bi-search"></i> Recherche dans le titre </label>
+            <input type="text" class="form-control" id="title_search" name="title_search" placeholder="Entrez un mot-clé..." />
+          </div>
+
+          <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Rechercher</button>
+        </form>
+      </div>
+
+      <!-- Affichage des résultats -->
+      {% if articles %}
+      <h2 class="results-header"><i class="bi bi-list-ul"></i> Résultats de la recherche ({{ articles|length }} articles trouvés)</h2>
+      <div class="row">
+        {% for article in articles %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="article-card">
+            {% if article.thumbnail %}
+            <img src="{{ article.thumbnail }}" alt="{{ article.title }}" class="article-image" />
+            {% endif %}
+            <div class="article-content">
+              <h3 class="article-title">{{ article.title }}</h3>
+              <div class="article-meta">
+                <p><i class="bi bi-calendar"></i> {{ article.date }}</p>
+                <p><i class="bi bi-person"></i> {{ article.author }}</p>
+                <p><i class="bi bi-tag"></i> {{ article.category }}</p>
+                {% if article.subcategory %}
+                <p><i class="bi bi-tags"></i> {{ article.subcategory }}</p>
+                {% endif %}
+              </div>
+              {% if article.summary %}
+              <p class="mb-3">{{ article.summary }}</p>
+              {% endif %}
+              <a href="{{ article.url }}" target="_blank" class="btn btn-primary"> <i class="bi bi-box-arrow-up-right"></i> Lire l'article </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif request.method == 'POST' %}
+      <div class="alert alert-info"><i class="bi bi-info-circle"></i> Aucun article trouvé pour ces critères de recherche.</div>
+      {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
