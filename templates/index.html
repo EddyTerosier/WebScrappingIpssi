@@ -130,27 +130,27 @@
               <label for="author" class="form-label"> <i class="bi bi-person"></i> Auteur </label>
               <select class="form-select" id="author" name="author">
                 <option value="">Tous les auteurs</option>
-                {% for author in authors %}
+                {% for author in authors %} {% if author %}
                 <option value="{{ author }}">{{ author }}</option>
-                {% endfor %}
+                {% endif %} {% endfor %}
               </select>
             </div>
             <div class="col-md-4 mb-3">
               <label for="category" class="form-label"> <i class="bi bi-tag"></i> Catégorie </label>
               <select class="form-select" id="category" name="category">
                 <option value="">Toutes les catégories</option>
-                {% for category in categories %}
+                {% for category in categories %} {% if category %}
                 <option value="{{ category }}">{{ category }}</option>
-                {% endfor %}
+                {% endif %} {% endfor %}
               </select>
             </div>
             <div class="col-md-4 mb-3">
               <label for="subcategory" class="form-label"> <i class="bi bi-tags"></i> Sous-catégorie </label>
               <select class="form-select" id="subcategory" name="subcategory">
                 <option value="">Toutes les sous-catégories</option>
-                {% for subcategory in subcategories %}
+                {% for subcategory in subcategories %} {% if subcategory %}
                 <option value="{{ subcategory }}">{{ subcategory }}</option>
-                {% endfor %}
+                {% endif %} {% endfor %}
               </select>
             </div>
           </div>
@@ -177,17 +177,20 @@
             <div class="article-content">
               <h3 class="article-title">{{ article.title }}</h3>
               <div class="article-meta">
+                {% if article.date %}
                 <p><i class="bi bi-calendar"></i> {{ article.date }}</p>
+                {% endif %} {% if article.author %}
                 <p><i class="bi bi-person"></i> {{ article.author }}</p>
+                {% endif %} {% if article.category %}
                 <p><i class="bi bi-tag"></i> {{ article.category }}</p>
-                {% if article.subcategory %}
+                {% endif %} {% if article.subcategory %}
                 <p><i class="bi bi-tags"></i> {{ article.subcategory }}</p>
                 {% endif %}
               </div>
               {% if article.summary %}
               <p class="mb-3">{{ article.summary }}</p>
               {% endif %}
-              <a href="{{ article.url }}" target="_blank" class="btn btn-primary"> <i class="bi bi-box-arrow-up-right"></i> Lire l'article </a>
+              <a href="{{ article.url }}" target="_blank" class="btn btn-primary"> <i class="bi bi-box-arrow-up-right"></i> Voir l'article </a>
             </div>
           </div>
         </div>

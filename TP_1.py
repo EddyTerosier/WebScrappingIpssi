@@ -19,6 +19,16 @@ def get_article_details(article_url):
         response = requests.get(article_url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         
+        # Récupération de la catégorie
+        category = None
+        shadow_div = soup.find('div', class_='shadow-top')
+        if shadow_div:
+            container_div = shadow_div.find('div', class_='container-fluid')
+            if container_div:
+                category_links = container_div.find_all('a', class_='t-def')
+                if len(category_links) >= 3:  # Le troisième lien contient la catégorie
+                    category = category_links[2].text.strip()
+        
         # Récupération de l'auteur et de la date
         meta_div = soup.find('div', class_='entry-meta article-meta d-flex')
         author = None
@@ -39,13 +49,14 @@ def get_article_details(article_url):
                 if time_tag and 'datetime' in time_tag.attrs:
                     date = time_tag['datetime'].split('T')[0]
         
-        # Récupération du résumé
-        summary_div = soup.find('div', class_='entry-content')
-        summary = None
-        if summary_div:
-            first_p = summary_div.find('p')
-            if first_p:
-                summary = first_p.text.strip()
+        # Récupération du contenu principal
+        content = None
+        content_div = soup.find('div', class_='entry-content')
+        if content_div:
+            # Récupération de tous les paragraphes
+            paragraphs = content_div.find_all('p')
+            if paragraphs:
+                content = '\n'.join([p.text.strip() for p in paragraphs])
         
         # Récupération des images
         images = {}
@@ -58,8 +69,10 @@ def get_article_details(article_url):
         return {
             'author': author,
             'date': date,
-            'summary': summary,
-            'images': images
+            'summary': content,
+            'images': images,
+            'category': category,
+            'content': content
         }
     except Exception as e:
         print(f"Erreur lors de la récupération des détails de l'article: {e}")
@@ -92,10 +105,10 @@ def fetch_articles(url):
                 if not title and a_tag:
                     title = a_tag.text.strip()
                 
-                # Récupération de la catégorie
+                # Récupération de la sous-catégorie
                 meta_div = article.find('div', class_='entry-meta')
                 tag_span = meta_div.find('span', class_='favtag color-b') if meta_div else None
-                category = tag_span.text.strip() if tag_span else None
+                subcategory = tag_span.text.strip() if tag_span else None
                 
                 # Récupération de l'image
                 img_div = article.find('div', class_='post-thumbnail')
@@ -117,13 +130,14 @@ def fetch_articles(url):
                 article_data = {
                     'url': article_url,
                     'title': title,
-                    'category': category,
+                    'category': article_details['category'] if article_details else None,
                     'date': article_details['date'] if article_details else None,
-                    'subcategory': category,
+                    'subcategory': subcategory,
                     'summary': article_details['summary'] if article_details else None,
                     'images': article_details['images'] if article_details else {},
                     'author': article_details['author'] if article_details else None,
-                    'thumbnail': thumbnail
+                    'thumbnail': thumbnail,
+                    'content': article_details['content'] if article_details else None
                 }
                 
                 articles_data.append(article_data)
