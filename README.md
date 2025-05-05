@@ -14,6 +14,7 @@ Ce projet permet de scraper les articles du Blog du Modérateur et de les stocke
   - Date de publication
   - Sous-catégorie
   - Résumé
+  - Contenu
   - Images
   - Auteur
   - Image miniature
