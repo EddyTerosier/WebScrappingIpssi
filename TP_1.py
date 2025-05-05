@@ -60,11 +60,13 @@ def get_article_details(article_url):
         
         # Récupération des images
         images = {}
-        for img in soup.find_all('img'):
-            if 'src' in img.attrs and not img['src'].startswith('data:'):
-                alt_text = img['alt'] if 'alt' in img.attrs else ''
-                caption = img['title'] if 'title' in img.attrs else alt_text
-                images[img['src']] = caption
+        article_div = soup.find('article')
+        if article_div:
+            for img in article_div.find_all('img'):
+                if 'src' in img.attrs and not img['src'].startswith('data:'):
+                    alt_text = img['alt'] if 'alt' in img.attrs else ''
+                    caption = img['title'] if 'title' in img.attrs else alt_text
+                    images[img['src']] = caption
         
         return {
             'author': author,
